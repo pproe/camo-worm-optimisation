@@ -1,15 +1,32 @@
 # PSO class
 
+from hashlib import new
+import random
+import numpy as np
+from util import prep_image
+from operator import attrgetter
+
+IMAGE_DIR = 'images'
+IMAGE_NAME='original'
+MASK = [320, 560, 160, 880] # ymin ymax xmin xmax
+rng = np.random.default_rng()
+
+image = prep_image(IMAGE_DIR, IMAGE_NAME, MASK)
+imshape = image.shape
+(ylim, xlim) = imshape
+
+(radius_std, deviation_std, width_theta) = (40, 30, 1)
+
 class Particle: 
     
-    def __init__(self, solution, fitness):
+    def __init__(self, solution, velocity, fitness):
         self.solution = solution
         self.pbest = solution
 
         self.current_solution_fit = fitness
         self.pbest_solution_fit = fitness
     
-        self.velocity = []
+        self.velocity = velocity
     
 
     def set_pbest(self, new_pbest):
@@ -61,12 +78,13 @@ class PSO:
     
     def __init__(
         self, 
-        iterations,
-        pop_size, 
-        num_dim, 
-        w, 
-        c1, 
-        c2
+        worm_size = 10,
+        iterations = 50,
+        pop_size = 100, 
+        num_dim = 8, 
+        w = 0.8, 
+        c1 = 2, 
+        c2 = 2
         ):
         """
         param iterations : max iterations to convergence
@@ -77,6 +95,7 @@ class PSO:
         param c2         : cognitive learning factor for gbest (global best position)
         """
 
+        self.worm_size = worm_size
         self.iterations = iterations
         self.pop_size = pop_size
         self.num_dim = num_dim
@@ -84,20 +103,85 @@ class PSO:
         self.c1 = c1
         self.c2 = c2
 
+        self.particles = []
+        self.gbest_record = []
+
         self.init_swarm()
+        print(self._random_init_worms())
 
-    def init_swarm(self):
-        pass
+    def _random_init_worms(self):
+        """x, y, r, theta, deviation_r, deviation_gamma, width, colour"""
+        mat = np.array(
+            [
+                [
+                    xlim * rng.random(),
+                    ylim * rng.random(), 
+                    rng.random() * np.pi, 
+                    radius_std * np.abs(rng.standard_normal()),
+                    deviation_std * np.abs(rng.standard_normal()),
+                    rng.random() * np.pi,
+                    rng.random(),
+                    width_theta * rng.standard_gamma(3)
+                ]
+                for _ in range(self.worm_size)
+            ]
+        )
 
-    def get_fitness(self):
-        pass
+        return mat
+
+    def init_swarm(self):  
+        velocity = np.zeros((self.worm_size, self.num_dim))           # Init velocity 
+        for i in range(self.pop_size):
+            position = self._random_init_worms()
+            if position.shape[0] != velocity.shape[0] or position.shape[1] != velocity.shape[1]:
+                raise ValueError(f"size of position does not fit for velocity at iter {i}")
+            self.particles.append(Particle(position, velocity, self.get_fitness(position)))
+
+    def get_fitness(self, position):
+        """calling get_cost_worm(position) ? """
+        return 1
 
     def set_gbest(self, new_gbest):
         self.gbest = new_gbest
 
+    def _update_particle(self, par):
+        solution_gbest = self.gbest.get_pbest() # gets solution of the gbest
+        solution_pbest = par.get_pbest()[:] # gets the pbest solution
+        solution_particle = par.get_current_solution()[:] # gets the current solution of the particle
+        cost_cur_solution = self.get_fitness(solution_particle) # get the cost of current solution
+
+        # Calac (pbest - pos) and (gbest - pos)
+        vel_pbest = self.c1 * random.random() * (solution_pbest - solution_particle)
+        vel_gbest = self.c2 * random.random() * (solution_gbest - solution_particle)
+
+        # Genrate particle's velocity and position
+        new_vel = self.w * par.get_velocity() + (vel_pbest + vel_gbest)
+        new_pos = solution_particle + new_vel
+
+        # Update  velocity and position
+        par.set_velocity(new_vel)
+        par.set_current_solution(new_pos)
+
+        # checks if current solution is pbest solution
+        if cost_cur_solution > par.get_cost_pbest():
+            par.set_pbest(solution_particle)
+            par.set_cost_pbest(cost_cur_solution)
+
+ 
     def run(self):
-        pass
+        for iter in range(self.iterations):
+            # updates gbest (best particle of the population)
+            self.gbest = max(self.particles, key=attrgetter('pbest_solution_fit'))
+            self.gbest_record.append(self.gbest.get_cost_pbest())
+            print("gbest is :{} at {} iter".format(self.gbest.get_cost_pbest(), iter))
+
+            for par in self.particles:
+                self._update_particle(par)
+
 
     def get_gbest(self):
         return self.gbest
     
+
+x = PSO()
+x.run()
