@@ -58,7 +58,7 @@ class Camo_Worm:
     def path (self):
         return mpath.Path(self.control_points(), [Path.MOVETO, Path.CURVE3, Path.CURVE3])
 
-    def patch (self):
+    def patch(self):
         return mpatches.PathPatch(self.path(), fc='None', ec=str(self.colour), lw=self.width, capstyle='round')
 
     def intermediate_points (self, intervals=None):
@@ -67,8 +67,8 @@ class Camo_Worm:
         return self.bezier.point_at_t(np.linspace(0,1,intervals))
 
     def approx_length (self):
-        intermediates = intermediate_points(self)
-        eds = euclidean_distances(intermediates,intermediates)
+        intermediates = self.intermediate_points()
+        eds = euclidean_distances(intermediates, intermediates)
         return np.sum(np.diag(eds,1))
 
     def colour_at_t(self, t, image):

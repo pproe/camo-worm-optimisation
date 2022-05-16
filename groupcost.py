@@ -12,12 +12,15 @@ def worm_segments_intersect(clew):
             if worm == worm2: continue
             points1 = worm.control_points()
             points2 = worm2.control_points()
-            
+
             for i in range(len(points1)-1):
                 cost1 = intersect(points1[i], points1[i+1], points2[i], points2[i+1])
                 cost2 = intersect(points2[i], points2[i+1], points1[i], points1[i+1])
                 cost = max([cost1, cost2])
                 if cost < min_cost:
                     min_cost = cost
-        costs.append(min_cost)
-    return costs
+        if min_cost > 0:
+            costs.append(0)
+        else:
+            costs.append(1)
+    return sum(costs)
