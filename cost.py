@@ -1,5 +1,6 @@
 from groupcost import *
 from internalcost import *
+from externalcost import *
 
 # Base Class to take in a clew of worms and return a cost value
 
@@ -9,13 +10,14 @@ class CostFunction:
     w_g = 1 # Group knowledge
     w_e = 1 # External knowledge
 
-    def __init__(self, clew):
+    def __init__(self, clew, image):
         self.clew = clew
         self._worm = None
+        self.image = image
 
     @staticmethod
-    def get_particle_cost(clew):
-        cost_obj = CostFunction(clew)
+    def get_particle_cost(clew, image):
+        cost_obj = CostFunction(clew, image)
         particle_cost = cost_obj.get_cost_clew()
         return particle_cost
 
@@ -43,5 +45,5 @@ class CostFunction:
         return sum([component_1_cost])
 
     def get_external_knowledge_cost(self):
-        #TODO
-        return -1
+        component_1_cost = camo_difference(self.clew, self.image)
+        return sum([component_1_cost])
