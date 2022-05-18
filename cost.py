@@ -6,9 +6,9 @@ from externalcost import *
 
 class CostFunction:
     # Static Class Variables to represent Weight Parameters for:
-    w_i = 1 # Internal knowledge
-    w_g = 1 # Group knowledge
-    w_e = 1 # External knowledge
+    w_i = 0.1 # Internal knowledge
+    w_g = 0.1 # Group knowledge
+    w_e = 0.8 # External knowledge
 
     def __init__(self, clew, image):
         self.clew = clew
@@ -36,13 +36,20 @@ class CostFunction:
     def get_internal_knowledge_cost(self):
         component_1_cost = approximate_clew_displacement(self.clew, 720*240) # 720*240 is image area
         component_2_cost = straightness_cost(self.clew)
-        return sum([component_2_cost])
+
+        return sum([
+            0.7 * straightness_cost(self.clew),
+            0.2 * length_cost(self.clew, 720),
+            0.1 * width_cost(self.clew),
+        ])
 
     def get_group_knowledge_cost(self):
         component_1_cost = worm_segments_intersect(self.clew)
 
-        return sum([component_1_cost])
+        return sum([
+            distance_cost(self.clew)
+        ])
 
     def get_external_knowledge_cost(self):
-        component_1_cost = camo_difference(self.clew, self.image)
+        component_1_cost = colour_cost(self.clew, self.image)
         return sum([component_1_cost])

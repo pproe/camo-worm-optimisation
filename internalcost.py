@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 def approximate_worm_area(worm):
     worm_area = worm.width * worm.approx_length() + math.pi * ((worm.width/2) ** 2)
@@ -13,13 +14,22 @@ def approximate_clew_displacement(clew, img_total_area):
         cost += opt_area - approximate_worm_area(worm)
     return abs(cost)
 
-def line_from_points(p1, p2):
-    m = (p1[1] - p2[1])/(p1[0] - p2[0])
-    C = p2[1] - m*p2[0]
-    return (m, 1, C)
-
 def straightness_cost(clew):
-    total = 0
+    costs = []
+    for worm in clew:
+        p = worm.control_points()
+        d = np.cross(p[2]-p[0], p[1]-p[0]) / np.linalg.norm(p[2]-p[0])
+        costs += [d / worm.approx_length()]
+    return np.average(costs, weights=(costs >= np.mean(costs)))
+
+def length_cost(clew, max):
+    costs = []
+    for worm in clew:
+        costs += [1 - worm.approx_length()/max]
+    return np.average(costs, weights=(costs >= np.mean(costs)))
+
+def width_cost(clew):
+    costs = []
     for worm in clew:
         points = worm.control_points()
         # print(points)
