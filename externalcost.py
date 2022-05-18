@@ -18,12 +18,12 @@ def camo_difference(clew, image):
 
 
 def colour_cost(clew, image):
-    total = []
+    costs = []
     for worm in clew:
         l = int(worm.approx_length())
         w = int(worm.width)
         colours = [worm.colour_at_t_square(t, w, image) for t in np.linspace(0,1,l)]
         avg_colours = [np.average(c) for c in colours if c.size != 0]
         sum_colours = [abs(c-worm.colour) for c in avg_colours if c != -1]
-        total += [np.average(sum_colours)]
-    return np.average(total, weights=(total > np.mean(total)))
+        costs += [np.average(sum_colours)]
+    return np.average(costs, weights=(costs > np.mean(costs)))
