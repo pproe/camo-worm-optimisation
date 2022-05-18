@@ -38,4 +38,4 @@ def distance_cost(clew):
         cost = 1 - np.min(dist)/200
         if cost < 0: cost = 0
         costs += [cost]
-    return np.average(costs, weights=(costs > np.mean(costs)))
+    return np.average(costs, weights=(costs >= np.mean(costs)))

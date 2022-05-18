@@ -26,4 +26,4 @@ def colour_cost(clew, image):
         avg_colours = [np.average(c) for c in colours if c.size != 0]
         sum_colours = [abs(c-worm.colour) for c in avg_colours if c != -1]
         costs += [np.average(sum_colours)]
-    return np.average(costs, weights=(costs > np.mean(costs)))
+    return np.average(costs, weights=(costs >= np.mean(costs)))
