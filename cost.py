@@ -36,7 +36,12 @@ class CostFunction:
     def get_internal_knowledge_cost(self):
         component_1_cost = approximate_clew_displacement(self.clew, 720*240) #720*240 is image area
         component_2_cost = straightness_cost(self.clew)
-        return sum([component_2_cost])
+
+        return sum([
+            0.7 * straightness_cost(self.clew),
+            0.2 * length_cost(self.clew, 720),
+            0.1 * width_cost(self.clew),
+        ])
 
     def get_group_knowledge_cost(self):
         component_1_cost = worm_segments_intersect(self.clew)

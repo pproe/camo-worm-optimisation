@@ -15,9 +15,24 @@ def approximate_clew_displacement(clew, img_total_area):
     return abs(cost)
 
 def straightness_cost(clew):
-    total = 0
+    total = []
     for worm in clew:
         p = worm.control_points()
         d = np.cross(p[2]-p[0], p[1]-p[0]) / np.linalg.norm(p[2]-p[0])
-        total += d / worm.approx_length()
-    return total
+        total += [d / worm.approx_length()]
+    return np.average(total, weights=(total > np.mean(total)))
+
+def length_cost(clew, max):
+    total = []
+    for worm in clew:
+        total += [1 - worm.approx_length()/max]
+    return np.average(total, weights=(total > np.mean(total)))
+
+def width_cost(clew):
+    total = []
+    for worm in clew:
+        # magic number for optimal width, we can decide later
+        val = 1 - worm.width/20
+        if val < 0: val = 0
+        total += [val]
+    return np.average(total, weights=(total > np.mean(total)))
