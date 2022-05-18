@@ -6,16 +6,19 @@ import numpy as np
 from util import prep_image
 from operator import attrgetter
 from cost import CostFunction as cf
-from util import Camo_Worm
+from util import Camo_Worm, matrix_to_camo
 
 IMAGE_DIR = 'images'
 IMAGE_NAME='original'
 MASK = [320, 560, 160, 880] # ymin ymax xmin xmax
 rng = np.random.default_rng()
 
-image = prep_image(IMAGE_DIR, IMAGE_NAME, MASK)
+image = prep_image(IMAGE_DIR, IMAGE_NAME, MASK, is_show=False)
 imshape = image.shape
 (ylim, xlim) = imshape
+
+def get_image():
+    return image
 
 (radius_std, deviation_std, width_theta) = (40, 30, 1)
 
@@ -80,7 +83,7 @@ class PSO:
     
     def __init__(
         self, 
-        worm_size = 10,
+        worm_size = 20,
         iterations = 50,
         pop_size = 100, 
         num_dim = 8, 
@@ -109,10 +112,12 @@ class PSO:
         self.gbest_record = []
 
         self.init_swarm()
-        print(self._random_init_worms())
+        self.init_gbest = min(self.particles, key=attrgetter('pbest_solution_fit'))
 
     def _random_init_worms(self):
-        """x, y, r, theta, deviation_r, deviation_gamma, width, colour"""
+        """
+        x, y, r, theta, deviation_r, deviation_gamma, width, colour
+        """
         mat = np.array(
             [
                 [
@@ -122,8 +127,8 @@ class PSO:
                     rng.random() * np.pi, 
                     deviation_std * np.abs(rng.standard_normal()),
                     rng.random() * np.pi,
-                    rng.random(),
-                    width_theta * rng.standard_gamma(3)
+                    width_theta * rng.standard_gamma(3),
+                    rng.random()
                 ]
                 for _ in range(self.worm_size)
             ]
@@ -139,10 +144,13 @@ class PSO:
                 raise ValueError(f"size of position does not fit for velocity at iter {i}")
             self.particles.append(Particle(position, velocity, self.get_fitness(position)))
 
+    def get_init_gbest(self):
+        return self.init_gbest.get_pbest()
+
     def get_fitness(self, position):
         """calling get_cost_worm(position) ? """
-        clew = [Camo_Worm(i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7]) for i in position]
-        return cf.get_particle_cost(clew, image)
+        # clew = [Camo_Worm(i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7]) for i in position]
+        return cf.get_particle_cost(matrix_to_camo(position), image)
 
     def set_gbest(self, new_gbest):
         self.gbest = new_gbest
@@ -161,6 +169,12 @@ class PSO:
         new_vel = self.w * par.get_velocity() + (vel_pbest + vel_gbest)
         new_pos = solution_particle + new_vel
 
+        for pos in new_pos:
+            if pos[7] > 1:
+                pos[7] = 1
+            elif pos[7] < 0:
+                pos[7] = 0
+
         # Update  velocity and position
         par.set_velocity(new_vel)
         par.set_current_solution(new_pos)
@@ -170,7 +184,6 @@ class PSO:
             par.set_pbest(solution_particle)
             par.set_cost_pbest(cost_cur_solution)
 
- 
     def run(self):
         for iter in range(self.iterations):
             # updates gbest (best particle of the population)
@@ -181,10 +194,8 @@ class PSO:
             for par in self.particles:
                 self._update_particle(par)
 
-
     def get_gbest(self):
-        return self.gbest
+        return self.gbest.get_pbest()
     
 
-x = PSO()
-x.run()
+x=PSO()

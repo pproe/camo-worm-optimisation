@@ -22,7 +22,7 @@ def straightness_cost(clew):
     total = 0
     for worm in clew:
         points = worm.control_points()
-        print(points)
+        # print(points)
         A, B, C = line_from_points(points[0], points[2])
         d = abs(A*points[1][0] + B*points[1][1] + C) / (A**2+B**2)**0.5
         dist = (points[2][0] - points[0][0])**2 + (points[2][1] - points[0][1])**2

@@ -1,20 +1,17 @@
-import imp
-from pso import PSO
-from util import Camo_Worm
-from util import Drawing    
+from pso import PSO, get_image
+from util import Camo_Worm, Drawing, matrix_to_camo   
 
-x = PSO()
+def draw(image, clew, save_name):
+    drawing = Drawing(image)
+    drawing.add_worms(clew)
+    drawing.show(save=save_name)
+
+image = get_image()
+x = PSO(iterations = 5)
+init_gbest = matrix_to_camo(x.get_init_gbest())
+
 x.run()
-gbest = x.get_gbest()
+gbest_clew = matrix_to_camo(x.get_gbest())
 
-# Draw a single worm along with control points and some sample points
-# self, x, y, r, theta, deviation_r, deviation_gamma, width, colour
-
-# worm = Camo_Worm(200, 100, 50, np.pi/6, 70, np.pi/3, 10, 0.8)
-# drawing = Drawing(image)
-# drawing.add_worms(worm)
-# drawing.add_dots(worm.intermediate_points(8), radius=2, color='green')
-# drawing.add_dots(worm.control_points(),color='orange')
-# drawing.add_dots((200,100), color='blue')
-
-# drawing.show(save='bezier.png')
+draw(image, init_gbest , 'init_gbest')
+draw(image, gbest_clew, 'gbest')
