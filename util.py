@@ -78,6 +78,18 @@ class Camo_Worm:
         except IndexError:
             return -1 
         return(np.array(colours)/255)
+    
+    def colour_at_t_square(self, t, r, image):
+        all_colours = []
+        for x in range(-r//2, r//2+1):
+            for y in range(-r//2, r//2+1):
+                intermediates = np.int64(np.round(np.array(self.bezier.point_at_t(t)).reshape(-1,2)))
+                try:
+                    colours = [image[point[1]+x,point[0]+y] for point in intermediates]
+                except IndexError:
+                    continue
+                all_colours += colours
+        return np.array(all_colours)/255
 
 # ========================= Drawing Class Definition ===========================
 

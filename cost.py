@@ -44,5 +44,5 @@ class CostFunction:
         return sum([component_1_cost])
 
     def get_external_knowledge_cost(self):
-        component_1_cost = camo_difference(self.clew, self.image)
+        component_1_cost = colour_cost(self.clew, self.image)
         return sum([component_1_cost])
