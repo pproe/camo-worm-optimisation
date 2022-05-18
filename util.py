@@ -32,7 +32,7 @@ def prep_image (imdir, imname, mask):
     image = np.flipud(crop(imageio.imread(imdir+'/'+imname+".png"), mask))
     print("{} {} ({}, {}, {}, {})".format(imname, np.shape(image), np.max(image), np.min(image), round(np.mean(image),1), round(np.std(image),1)))
     plt.imshow(image, vmin=0, vmax=255, cmap='gray', origin='lower') # use vmin and vmax to stop imshow from scaling
-    plt.show()
+    # plt.show()
     return image
 
 # ======================== Camo Worm Class Definition ==========================

@@ -5,6 +5,8 @@ import random
 import numpy as np
 from util import prep_image
 from operator import attrgetter
+from cost import CostFunction as cf
+from util import Camo_Worm
 
 IMAGE_DIR = 'images'
 IMAGE_NAME='original'
@@ -116,8 +118,8 @@ class PSO:
                 [
                     xlim * rng.random(),
                     ylim * rng.random(), 
-                    rng.random() * np.pi, 
                     radius_std * np.abs(rng.standard_normal()),
+                    rng.random() * np.pi, 
                     deviation_std * np.abs(rng.standard_normal()),
                     rng.random() * np.pi,
                     rng.random(),
@@ -139,7 +141,8 @@ class PSO:
 
     def get_fitness(self, position):
         """calling get_cost_worm(position) ? """
-        return 1
+        clew = [Camo_Worm(i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7]) for i in position]
+        return cf.get_particle_cost(clew, image)
 
     def set_gbest(self, new_gbest):
         self.gbest = new_gbest
@@ -163,7 +166,7 @@ class PSO:
         par.set_current_solution(new_pos)
 
         # checks if current solution is pbest solution
-        if cost_cur_solution > par.get_cost_pbest():
+        if cost_cur_solution < par.get_cost_pbest():
             par.set_pbest(solution_particle)
             par.set_cost_pbest(cost_cur_solution)
 
@@ -171,7 +174,7 @@ class PSO:
     def run(self):
         for iter in range(self.iterations):
             # updates gbest (best particle of the population)
-            self.gbest = max(self.particles, key=attrgetter('pbest_solution_fit'))
+            self.gbest = min(self.particles, key=attrgetter('pbest_solution_fit'))
             self.gbest_record.append(self.gbest.get_cost_pbest())
             print("gbest is :{} at {} iter".format(self.gbest.get_cost_pbest(), iter))
 

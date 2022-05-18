@@ -26,15 +26,15 @@ class CostFunction:
         group_cost = CostFunction.w_g * self.get_group_knowledge_cost()
         external_cost = CostFunction.w_e * self.get_external_knowledge_cost()
 
-        print('Internal Cost:', internal_cost)
-        print('Group Cost:', group_cost)
-        print('External Cost:', external_cost)
+        # print('Internal Cost:', internal_cost)
+        # print('Group Cost:', group_cost)
+        # print('External Cost:', external_cost)
 
         clew_cost = internal_cost + group_cost + external_cost
         return clew_cost
 
     def get_internal_knowledge_cost(self):
-        component_1_cost = approximate_clew_displacement(self.clew, 720*240) #720*240 is image area
+        component_1_cost = approximate_clew_displacement(self.clew, 720*240) # 720*240 is image area
         component_2_cost = straightness_cost(self.clew)
 
         return sum([component_1_cost, component_2_cost])
