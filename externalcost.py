@@ -1,6 +1,6 @@
 import numpy as np
 # Function compares the colour of the worm's region in the area vs the worm's colour and returns absolute difference
-def camo_difference(clew, image):
+def camo_difference(clew, image, max):
     total_cost = 0
     for worm in clew:
         worm_length = round(worm.approx_length())
@@ -12,7 +12,7 @@ def camo_difference(clew, image):
             region_colour_total += sum(image[circ_mask])
             _pixels_counted += circ_mask.sum()
         total_cost += abs(region_colour_total - (_pixels_counted * worm.colour))
-    return total_cost
+    return total_cost / max
 
 # Function to create a boolean array of circle given coordinates center, and h,w of image. 
 def create_circular_mask(h, w, center=None, radius=None):
