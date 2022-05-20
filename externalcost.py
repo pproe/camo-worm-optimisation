@@ -4,17 +4,27 @@ def camo_difference(clew, image):
     total_cost = 0
     for worm in clew:
         worm_length = round(worm.approx_length())
-        _wl = worm_length
-        # print(worm_length)
+        _pixels_counted = 0
         region_colour_total = 0
         for discrete_unit in range(worm_length):
-            colour_at_point = int(worm.colour_at_t(discrete_unit / worm_length, image))
-            if colour_at_point == -1:
-                _wl -= 1
-            else:
-                region_colour_total += colour_at_point
-        total_cost += abs(region_colour_total - (_wl * worm.colour))
+            worm_point =  worm.bezier.point_at_t(discrete_unit / worm_length)
+            circ_mask = create_circular_mask(image.shape[0], image.shape[1], center=(worm_point[0], worm_point[1]), radius=worm.width)
+            region_colour_total += sum(image[circ_mask])
+            _pixels_counted += circ_mask.sum()
+        total_cost += abs(region_colour_total - (_pixels_counted * worm.colour))
     return total_cost
+
+# Function to create a boolean array of circle given coordinates center, and h,w of image. 
+def create_circular_mask(h, w, center=None, radius=None):
+    if center is None: # use the middle of the image
+        center = (int(w/2), int(h/2))
+    if radius is None: # use the smallest distance between the center and image walls
+        radius = min(center[0], center[1], w-center[0], h-center[1])
+    Y, X = np.ogrid[:h, :w]
+    dist_from_center = np.sqrt((X - center[0])**2 + (Y-center[1])**2)
+
+    mask = dist_from_center <= radius
+    return mask
 
 
 def colour_cost(clew, image):
