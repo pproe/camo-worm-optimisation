@@ -31,14 +31,19 @@ def prep_image (imdir, imname, mask, is_show = True):
     print("Image name (shape) (intensity max, min, mean, std)\n")
     image = np.flipud(crop(imageio.imread(imdir+'/'+imname+".png"), mask))
     print("{} {} ({}, {}, {}, {})".format(imname, np.shape(image), np.max(image), np.min(image), round(np.mean(image),1), round(np.std(image),1)))
-    plt.imshow(image, vmin=0, vmax=255, cmap='gray', origin='lower') # use vmin and vmax to stop imshow from scaling
     if is_show:
+        plt.imshow(image, vmin=0, vmax=255, cmap='gray', origin='lower') # use vmin and vmax to stop imshow from scaling
         plt.show()
     
     return image
 
 def matrix_to_camo(arr):
     return [Camo_Worm(i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7]) for i in arr]
+
+def draw(image, clew, save_name):
+    drawing = Drawing(image)
+    drawing.add_worms(clew)
+    drawing.show(save=save_name)
 
 # ======================== Camo Worm Class Definition ==========================
 
