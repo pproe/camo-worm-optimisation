@@ -1,3 +1,4 @@
+from pydantic import create_model_from_typeddict
 from groupcost import *
 from internalcost import *
 from externalcost import *
@@ -34,17 +35,16 @@ class CostFunction:
         return clew_cost
 
     def get_internal_knowledge_cost(self):
-        component_1_cost = approximate_clew_displacement(self.clew, 720*240) # 720*240 is image area
-        component_2_cost = straightness_cost(self.clew)
 
         return sum([
-            0.7 * straightness_cost(self.clew),
+            0.4 * straightness_cost(self.clew),
             0.2 * length_cost(self.clew, 720),
             0.1 * width_cost(self.clew),
+            0.3 * image_area_cost(self.clew, 720*240)
         ])
 
     def get_group_knowledge_cost(self):
-        component_1_cost = worm_segments_intersect(self.clew)
+        # component_1_cost = worm_segments_intersect(self.clew)
 
         return sum([
             distance_cost(self.clew)
@@ -52,4 +52,6 @@ class CostFunction:
 
     def get_external_knowledge_cost(self):
         component_1_cost = colour_cost(self.clew, self.image)
+        # component_2_cost = camo_difference(self.clew, self.image) # Calculates the the circle 
+
         return sum([component_1_cost])

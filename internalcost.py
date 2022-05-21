@@ -7,12 +7,12 @@ def approximate_worm_area(worm):
 
 # This function returns a cost of 0 when the summation of all areas of worms in a clew equal to the size of the image (img_total_area).
 # When PSO optimises this cost, the worms will converge to fill the space of the image. It may be innaccurate due to approximation however.
-def approximate_clew_displacement(clew, img_total_area):
+def image_area_cost(clew, img_total_area):
     opt_area = img_total_area / len(clew)
     cost = 0
     for worm in clew:
         cost += opt_area - approximate_worm_area(worm)
-    return abs(cost)
+    return abs(cost) / (720 * 240)
 
 def straightness_cost(clew):
     costs = []
@@ -28,13 +28,11 @@ def length_cost(clew, max):
         costs += [1 - worm.approx_length()/max]
     return np.average(costs, weights=(costs >= np.mean(costs)))
 
-def width_cost(clew):
+def width_cost(clew):   
     costs = []
     for worm in clew:
-        points = worm.control_points()
-        # print(points)
-        A, B, C = line_from_points(points[0], points[2])
-        d = abs(A*points[1][0] + B*points[1][1] + C) / (A**2+B**2)**0.5
-        dist = (points[2][0] - points[0][0])**2 + (points[2][1] - points[0][1])**2
-        total += d / dist**0.5
-    return total
+        # magic number for optimal width, we can decide later
+        val = 1 - worm.width/20
+        if val < 0: val = 0
+        costs += [val]
+    return np.average(costs, weights=(costs >= np.mean(costs)))

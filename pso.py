@@ -170,10 +170,16 @@ class PSO:
         new_pos = solution_particle + new_vel
 
         for pos in new_pos:
+            if pos[0] > xlim or pos[0] < 0:
+                pos[0] =  xlim * rng.random()
+            
+            if pos[1] > ylim or pos[1] < 0:
+                pos[1] = ylim * rng.random()
+
             if pos[7] > 1:
                 pos[7] = 1
             elif pos[7] < 0:
-                pos[7] = 0
+                pos[7] = 0.01
 
         # Update  velocity and position
         par.set_velocity(new_vel)
@@ -199,3 +205,6 @@ class PSO:
     
 
 x=PSO()
+# for _ in range(50):
+#     print(xlim, ylim)
+    # print(xlim * rng.random(), ylim * rng.random())           
