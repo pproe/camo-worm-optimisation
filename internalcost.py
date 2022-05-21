@@ -1,5 +1,7 @@
+import imp
 import math
 import numpy as np
+from util import weighted_average
 
 def approximate_worm_area(worm):
     worm_area = worm.width * worm.approx_length() + math.pi * ((worm.width/2) ** 2)
@@ -20,13 +22,13 @@ def straightness_cost(clew):
         p = worm.control_points()
         d = np.cross(p[2]-p[0], p[1]-p[0]) / np.linalg.norm(p[2]-p[0])
         costs += [d / worm.approx_length()]
-    return np.average(costs, weights=(costs >= np.mean(costs)))
+    return weighted_average(costs)
 
 def length_cost(clew, max):
     costs = []
     for worm in clew:
         costs += [1 - worm.approx_length()/max]
-    return np.average(costs, weights=(costs >= np.mean(costs)))
+    return weighted_average(costs)
 
 def width_cost(clew):   
     costs = []
@@ -35,4 +37,4 @@ def width_cost(clew):
         val = 1 - worm.width/20
         if val < 0: val = 0
         costs += [val]
-    return np.average(costs, weights=(costs >= np.mean(costs)))
+    return weighted_average(costs)

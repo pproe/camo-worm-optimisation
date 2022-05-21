@@ -87,7 +87,7 @@ class Camo_Worm:
                 try:
                     colours = [image[point[1]+x,point[0]+y] for point in intermediates]
                 except IndexError:
-                    continue
+                    colours = [255 for point in intermediates] 
                 all_colours += colours
         return np.array(all_colours)/255
 
@@ -152,3 +152,8 @@ def initialise_clew (size, imshape, init_params):
     for i in range(size):
         clew.append(random_worm(imshape, init_params))
     return clew
+
+def weighted_average(array):
+    w = array >= np.mean(array)
+    if w.size == 0: w = None
+    return np.average(array, weights=w)
