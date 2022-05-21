@@ -1,4 +1,6 @@
 import numpy as np
+from util import weighted_average
+
 # Function compares the colour of the worm's region in the area vs the worm's colour and returns absolute difference
 def camo_difference(clew, image, max):
     total_cost = 0
@@ -32,8 +34,10 @@ def colour_cost(clew, image):
     for worm in clew:
         l = int(worm.approx_length())
         w = int(worm.width)
-        colours = [worm.colour_at_t_square(t, w, image) for t in np.linspace(0,1,l)]
-        avg_colours = [np.average(c) for c in colours if c.size != 0]
+        # print(int(l//(w+2))+2)
+        colours = [worm.colour_at_t_square(t, w, image) for t in np.linspace(0,1,int(l//(w+2))+2)]
+        avg_colours = [np.nanmean(c) for c in colours if c.size != 0]
         sum_colours = [abs(c-worm.colour) for c in avg_colours if c != -1]
-        costs += [np.average(sum_colours)]
-    return np.average(costs, weights=(costs >= np.mean(costs)))
+        if len(sum_colours) == 0: costs += [1]
+        else: costs += [np.nanmean(sum_colours)]
+    return weighted_average(costs)

@@ -1,4 +1,3 @@
-from pydantic import create_model_from_typeddict
 from groupcost import *
 from internalcost import *
 from externalcost import *
@@ -7,9 +6,9 @@ from externalcost import *
 
 class CostFunction:
     # Static Class Variables to represent Weight Parameters for:
-    w_i = 0.1 # Internal knowledge
-    w_g = 0.1 # Group knowledge
-    w_e = 0.8 # External knowledge
+    w_i = 1 # Internal knowledge
+    w_g = 1 # Group knowledge
+    w_e = 1 # External knowledge
 
     def __init__(self, clew, image):
         self.clew = clew
@@ -37,16 +36,17 @@ class CostFunction:
     def get_internal_knowledge_cost(self):
 
         return sum([
-            0.4 * straightness_cost(self.clew),
-            0.2 * length_cost(self.clew, 720),
-            0.1 * width_cost(self.clew),
-            0.3 * image_area_cost(self.clew, 720*240)
+            0.5 * straightness_cost(self.clew),
+            0.3 * length_cost(self.clew, 720),
+            0.2 * width_cost(self.clew),
+           # 0.3 * image_area_cost(self.clew, 720*240)
         ])
 
     def get_group_knowledge_cost(self):
         # component_1_cost = worm_segments_intersect(self.clew)
 
         return sum([
+            #worm_segments_intersect(self.clew),
             distance_cost(self.clew)
         ])
 

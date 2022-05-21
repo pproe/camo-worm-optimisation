@@ -83,9 +83,9 @@ class PSO:
     
     def __init__(
         self, 
-        worm_size = 20,
+        worm_size = 50,
         iterations = 50,
-        pop_size = 100, 
+        pop_size = 50, 
         num_dim = 8, 
         w = 0.8, 
         c1 = 2, 
@@ -175,6 +175,9 @@ class PSO:
             
             if pos[1] > ylim or pos[1] < 0:
                 pos[1] = ylim * rng.random()
+
+            if pos[6] < 1:
+                pos[6] = 1
 
             if pos[7] > 1:
                 pos[7] = 1

@@ -7,7 +7,7 @@ def draw(image, clew, save_name):
     drawing.show(save=save_name)
 
 image = get_image()
-x = PSO(iterations = 5)
+x = PSO(worm_size=15, iterations = 20, c1=2, c2=2, pop_size=30, w=1)
 init_gbest = matrix_to_camo(x.get_init_gbest())
 
 x.run()

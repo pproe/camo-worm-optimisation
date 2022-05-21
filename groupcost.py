@@ -1,5 +1,6 @@
 from itertools import combinations, product
 import numpy as np
+from util import weighted_average
 
 def intersect(a1, a2, b1, b2):
     area = lambda p1, p2, p3 : (p2[0]-p1[0])*(p3[1]-p1[1])-(p3[0]-p1[0])*(p2[1]-p1[1])
@@ -31,11 +32,24 @@ def worm_segments_intersect(clew):
 def distance_cost(clew):
     costs = []
     for worm1, worm2 in combinations(clew, 2):
-        p1 = worm1.intermediate_points(10)
-        p2 = worm2.intermediate_points(10)
+        p1 = worm1.control_points()
+        p2 = worm2.control_points()
+
+        avg_1 = [0,0]
+        avg_2 = [0,0]
+        avg_1[0] = (p1[0][0] + p1[-1][0])/2 
+        avg_1[1] = (p1[0][1] + p1[-1][1])/2 
+        avg_2[0] = (p2[0][0] + p2[-1][0])/2 
+        avg_2[1] = (p2[0][1] + p2[-1][1])/2 
+        dist = (avg_2[0] - avg_1[0])**2 + (avg_2[1] - avg_2[1])**2
+        if dist**0.5 > 150:
+            costs += [0]
+            continue
+        
+
         p_all = list(product(p1, p2))
         dist = [np.linalg.norm(d[1]-d[0]) for d in p_all]
         cost = 1 - np.min(dist)/200
         if cost < 0: cost = 0
         costs += [cost]
-    return np.average(costs, weights=(costs >= np.mean(costs)))
+    return weighted_average(costs)
