@@ -45,6 +45,7 @@ def draw(image, clew, save_name):
     drawing.add_worms(clew)
     drawing.show(save=save_name)
 
+
 # ======================== Camo Worm Class Definition ==========================
 
 class Camo_Worm:
@@ -133,6 +134,7 @@ class Drawing:
         if save is not None:
             plt.savefig(save)
             print(f"{save} is saved")
+            plt.close()
 
         if is_show:
             plt.show()

@@ -6,9 +6,9 @@ from externalcost import *
 
 class CostFunction:
     # Static Class Variables to represent Weight Parameters for:
-    w_i = 1 # Internal knowledge
-    w_g = 1 # Group knowledge
-    w_e = 1 # External knowledge
+    w_i = 0.5 # Internal knowledge
+    w_g = 0.5 # Group knowledge
+    w_e = 0.8 # External knowledge
 
     def __init__(self, clew, image):
         self.clew = clew

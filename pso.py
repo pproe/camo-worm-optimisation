@@ -209,4 +209,7 @@ class PSO:
 
     def get_gbest(self):
         return self.gbest.get_pbest()
+
+    def get_gbest_records(self):
+        return self.gbest_record
             
