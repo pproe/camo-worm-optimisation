@@ -12,10 +12,12 @@ Application of a meta-heuristic algorithm to optimise the definition of OCT scan
 </ul>
 
 ### Running the PSO for Camo Worm Optimisation
-Clone this repo to your own desktop by 
+Clone this repo to your own desktop by :
+
 ```git clone https://github.com/pproe/camo-worm-optimisation.git```
 
-And run 
-```python run.py``
+And run by :
+
+```python run.py```
 
 Images will be generaed at each iteration to present the particle exploration and evolution. They are saved under ```gbest_imgs```. A line plot that records the cost of gbest will be generated under ```particle_explore```
