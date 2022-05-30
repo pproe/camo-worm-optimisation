@@ -22,7 +22,6 @@ if __name__ == "__main__":
         pop_size = 30, 
         w = 1
         )
-    # init_gbest = matrix_to_camo(x.get_init_gbest())
 
     p.run()
 
@@ -31,9 +30,3 @@ if __name__ == "__main__":
     y = p.get_gbest_records()
     print(y)
     plot_pso(x, y, name)
-
-
-# gbest_clew = matrix_to_camo(x.get_gbest())
-
-# draw(image, init_gbest , 'init_gbest')
-# draw(image, gbest_clew, 'gbest')

@@ -1,4 +1,3 @@
-import imp
 import math
 import numpy as np
 from util import weighted_average
